@@ -41,7 +41,7 @@ func (p *HTMLParser) Parse(filePath string) (string, error) {
 	return formattedText, nil
 }
 
-// formatText форматирует текст, добавляя переносы строк между абзацами
+// formatText форматирует текст, добавляя отступы для абзацев и разделов
 func formatText(lines []string) string {
 	var buf strings.Builder
 	var lastIsNewline bool
@@ -54,14 +54,16 @@ func formatText(lines []string) string {
 				lastIsNewline = true
 			}
 		} else {
+			// Добавляем отступ для абзаца
 			if buf.Len() > 0 && !lastIsNewline {
-				buf.WriteByte(' ')
+				buf.WriteString("\n    ") // 4 пробела для отступа
 			}
 			buf.WriteString(line)
 			lastIsNewline = false
 		}
 	}
 
+	// Убираем лишние пробелы и возвращаем текст
 	result := strings.TrimRightFunc(buf.String(), unicode.IsSpace)
 	return strings.ReplaceAll(result, "\n ", "\n")
 }

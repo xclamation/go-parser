@@ -2,10 +2,10 @@ package djvu
 
 import (
 	"fmt"
+	"os"
+	"os/exec"
+	"path/filepath"
 	"strings"
-
-	"code.sajari.com/docconv/v2"
-	"github.com/otiai10/gosseract/v2"
 )
 
 // DJVUParser структура для парсера DJVU
@@ -18,44 +18,82 @@ func NewDJVUParser() *DJVUParser {
 
 // Parse извлекает текст из DJVU-файла
 func (p *DJVUParser) Parse(filePath string) (string, error) {
-	// Используем docconv для извлечения текста из DJVU
-	res, err := docconv.ConvertPath(filePath)
+	// Создаем временную директорию для сохранения изображений
+	tempDir, err := os.MkdirTemp("", "djvu-pages")
 	if err != nil {
-		return "", fmt.Errorf("error converting DJVU file: %v", err)
+		return "", fmt.Errorf("error creating temp directory: %v", err)
+	}
+	defer os.RemoveAll(tempDir)
+
+	// Проверяем наличие утилиты ddjvu
+	if err := exec.Command("where", "ddjvu").Run(); err != nil {
+		return "", fmt.Errorf("ddjvu is not installed or not found in PATH")
 	}
 
-	// Если текст извлечен, возвращаем его
-	if res.Body != "" {
-		return res.Body, nil
-	}
-
-	// Если текст не извлечен, пробуем извлечь текст из изображений с помощью Tesseract OCR
-	text, err := extractTextFromImages(filePath)
+	// Разделяем DJVU-файл на изображения с помощью ddjvu
+	imagePattern := filepath.Join(tempDir, "page_%03d.tiff")
+	cmd := exec.Command("ddjvu", "-format=tiff", "-eachpage", filePath, imagePattern)
+	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return "", fmt.Errorf("error extracting text from images: %v", err)
+		return "", fmt.Errorf("error splitting DJVU file: %v\nOutput: %s", err, string(output))
 	}
 
+	// Извлекаем текст из каждого изображения
+	var fullText strings.Builder
+	images, err := filepath.Glob(filepath.Join(tempDir, "page_*.tiff"))
+	if err != nil {
+		return "", fmt.Errorf("error listing images: %v", err)
+	}
+
+	for i, imagePath := range images {
+		text, err := extractTextFromImage(imagePath)
+		if err != nil {
+			return "", fmt.Errorf("error extracting text from image %s: %v", imagePath, err)
+		}
+
+		// Добавляем текст страницы к общему тексту
+		fullText.WriteString(formatPage(text, i+1))
+		fullText.WriteString("\n\n") // Добавляем разделитель между страницами
+	}
+
+	return fullText.String(), nil
+}
+
+// extractTextFromImage извлекает текст из изображения с помощью Tesseract OCR
+func extractTextFromImage(imagePath string) (string, error) {
+	// Проверяем наличие утилиты tesseract
+	if err := exec.Command("tesseract", "--version").Run(); err != nil {
+		return "", fmt.Errorf("tesseract is not installed or not found in PATH")
+	}
+
+	// Вызываем Tesseract через командную строку
+	cmd := exec.Command("tesseract", imagePath, "stdout")
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return "", fmt.Errorf("error running tesseract: %v", err)
+	}
+
+	// Убираем лишние пробелы и возвращаем текст
+	text := strings.TrimSpace(string(output))
 	return text, nil
 }
 
-// extractTextFromImages извлекает текст из изображений с помощью Tesseract OCR
-func extractTextFromImages(filePath string) (string, error) {
-	// Используем gosseract для распознавания текста
-	client := gosseract.NewClient()
-	defer client.Close()
+// formatPage форматирует текст страницы, добавляя отступы и заголовок
+func formatPage(text string, pageNumber int) string {
+	var formattedText strings.Builder
 
-	// Указываем путь к файлу
-	if err := client.SetImage(filePath); err != nil {
-		return "", fmt.Errorf("error setting image: %v", err)
+	// Добавляем заголовок страницы
+	formattedText.WriteString(fmt.Sprintf("=== Страница %d ===\n", pageNumber))
+
+	// Разделяем текст на абзацы
+	paragraphs := strings.Split(text, "\n")
+	for _, paragraph := range paragraphs {
+		paragraph = strings.TrimSpace(paragraph)
+		if paragraph != "" {
+			// Добавляем отступ для абзаца
+			formattedText.WriteString("    " + paragraph + "\n")
+		}
 	}
 
-	// Распознаем текст
-	text, err := client.Text()
-	if err != nil {
-		return "", fmt.Errorf("error recognizing text: %v", err)
-	}
-
-	// Убираем лишние пробелы и форматируем текст
-	text = strings.TrimSpace(text)
-	return text, nil
+	return formattedText.String()
 }
