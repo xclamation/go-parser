@@ -5,6 +5,7 @@ go 1.24.0
 require (
 	code.sajari.com/docconv/v2 v2.0.0-pre.4
 	github.com/PuerkitoBio/goquery v1.10.2
+	github.com/go-ole/go-ole v1.3.0
 )
 
 require (
@@ -25,6 +26,7 @@ require (
 	github.com/richardlehane/msoleps v1.0.3 // indirect
 	github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf // indirect
 	golang.org/x/net v0.35.0 // indirect
+	golang.org/x/sys v0.30.0 // indirect
 	golang.org/x/text v0.22.0 // indirect
 	google.golang.org/protobuf v1.30.0 // indirect
 )

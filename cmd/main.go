@@ -20,6 +20,8 @@ func main() {
 	switch fileType {
 	case "html":
 		p = parser.NewHTMLParser()
+	case "doc":
+		p = parser.NewDOCParser()
 	case "docx":
 		p = parser.NewDOCXParser()
 	case "pdf":

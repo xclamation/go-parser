@@ -2,6 +2,7 @@ package parser
 
 import (
 	"github.com/xclamation/go-parser/internal/parser/djvu"
+	"github.com/xclamation/go-parser/internal/parser/doc"
 	"github.com/xclamation/go-parser/internal/parser/docx"
 	"github.com/xclamation/go-parser/internal/parser/html"
 	"github.com/xclamation/go-parser/internal/parser/pdf"
@@ -15,6 +16,11 @@ type Parser interface {
 // NewHTMLParser создает парсер для HTML
 func NewHTMLParser() Parser {
 	return &html.HTMLParser{}
+}
+
+// NewDOCParser создает парсер для DOCX
+func NewDOCParser() Parser {
+	return &doc.DOCParser{}
 }
 
 // NewDOCXParser создает парсер для DOCX
