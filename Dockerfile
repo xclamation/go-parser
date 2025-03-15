@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
     pkg-config \
+    wv \                      # wv для работы с DOC \
     libpoppler-dev \          # Poppler для работы с PDF \
     libpoppler-cpp-dev \      # Poppler C++ bindings \
     libdjvulibre-dev \        # DjVuLibre для работы с DjVu \

@@ -8,6 +8,11 @@
 
 ### Системные зависимости
 
+#### wv (wvWare)  
+Утилита для конвертации `.doc` файлов в текстовый формат.  
+Руководство по установке для Windows: [wvWare Installation Guide for Windows](https://sourceforge.net/projects/wvware/files/latest/download)  
+Руководство по установке для Linux: [wvWare Installation Guide for Linux](https://wiki.debian.org/WvWare)
+
 #### Poppler
 Используется для работы с PDF-файлами.  
 Руководство по установке: [Poppler Installation Guide](https://poppler.freedesktop.org/)
