@@ -45,8 +45,21 @@ func (p *DJVUParser) Parse(filePath string) (string, error) {
 		return "", fmt.Errorf("error listing images: %v", err)
 	}
 
+	var language string
+	switch {
+	case strings.Contains(filePath, "ru"):
+		language = "rus"
+	case strings.Contains(filePath, "eng"):
+		language = "eng"
+	}
+
 	for i, imagePath := range images {
-		text, err := extractTextFromImage(imagePath)
+		if err != nil {
+			return "", fmt.Errorf("error detecting language: %v", err)
+		}
+
+		// Извлекаем текст с учетом языка
+		text, err := extractTextFromImage(imagePath, language)
 		if err != nil {
 			return "", fmt.Errorf("error extracting text from image %s: %v", imagePath, err)
 		}
@@ -60,14 +73,14 @@ func (p *DJVUParser) Parse(filePath string) (string, error) {
 }
 
 // extractTextFromImage извлекает текст из изображения с помощью Tesseract OCR
-func extractTextFromImage(imagePath string) (string, error) {
+func extractTextFromImage(imagePath string, language string) (string, error) {
 	// Проверяем наличие утилиты tesseract
 	if err := exec.Command("tesseract", "--version").Run(); err != nil {
 		return "", fmt.Errorf("tesseract is not installed or not found in PATH")
 	}
 
-	// Вызываем Tesseract через командную строку
-	cmd := exec.Command("tesseract", imagePath, "stdout")
+	// Вызываем Tesseract через командную строку с указанием языка
+	cmd := exec.Command("tesseract", imagePath, "stdout", "-l", language)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return "", fmt.Errorf("error running tesseract: %v", err)
