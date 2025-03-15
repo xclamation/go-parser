@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"github.com/xclamation/go-parser/pkg/consts"
 	"io"
 	"os"
 	"path/filepath"
@@ -8,15 +9,7 @@ import (
 )
 
 const (
-	PATH         string = "../../examples"
-	expectedHTML string = `
-Test Page
-Header 1
-   Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam distinctio inventore labore molestiae nemo nobis, omnis quaerat reprehenderit! Adipisci consequuntur cum cumque, dolorem illo illum itaque voluptates. Blanditiis culpa, veniam.
-   Paragraph 2
-   Header 2
-   Paragraph 3`
-	expectedDOC string = ""
+	PATH string = "../../examples"
 )
 
 func TestHTMLParser(t *testing.T) {
@@ -26,8 +19,8 @@ func TestHTMLParser(t *testing.T) {
 		t.Fatalf("Failed to parse HTML file: %v", err)
 	}
 
-	if text != expectedHTML {
-		t.Errorf("\nExpected:\n'%s'\ngot:\n'%s'", expectedHTML, text)
+	if text != consts.ExpectedHTML {
+		t.Errorf("\nExpected:\n'%s'\ngot:\n'%s'", consts.ExpectedHTML, text)
 	}
 }
 
@@ -61,8 +54,8 @@ func TestDOCParser(t *testing.T) {
 		t.Fatalf("Failed to parse DOC file: %v", err)
 	}
 
-	if text != expectedDOC {
-		t.Errorf("\nExpected:\n'%s'\ngot:\n'%s'", expectedDOC, text)
+	if text != consts.ExpectedDOC {
+		t.Errorf("\nExpected:\n'%s'\ngot:\n'%s'", consts.ExpectedDOC, text)
 	}
 }
 
