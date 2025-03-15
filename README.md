@@ -88,8 +88,8 @@ go build -o go-parser ./cmd/main.go
 ├── go.sum
 ├── cmd
 │   └── main.go
-├── internal
-│   └──parser
+└── internal
+    └──parser
         ├── djvu
         │   └── djvu.go
         ├── doc
@@ -100,6 +100,5 @@ go build -o go-parser ./cmd/main.go
         │   └── html.go
         ├── pdf
         │   └── pdf.go
-        └── parser.go
-└── 
+        └── parser.go 
 ```
