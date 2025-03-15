@@ -17,7 +17,7 @@
 Руководство по установке: [DjVuLibre Installation Guide](http://djvu.sourceforge.net/)
 
 #### Tesseract OCR
-Используется для извлечения текста из изображений в PDF и других форматах.  
+Используется для извлечения текста из изображений в DJVU и других форматах.  
 Руководство по установке: [Tesseract Installation Guide](https://tesseract-ocr.github.io/tessdoc/Installation.html)
 
 **Языковые пакеты (например, английский и русский):**  
